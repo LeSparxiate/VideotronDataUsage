@@ -36,7 +36,7 @@ namespace VideotronDataUsage.Classes
             if (userkey != null && userkey != "")
             {
                 string response;
-                HttpWebResponse ret = HttpRequest.GetRequest("https://www.videotron.com/api/1.0/internet/usage/wired/" + userkey + ".json?lang=fr&caller=sparxiate.com");
+                HttpWebResponse ret = HttpRequest.GetRequest("https://www.videotron.com/api/1.0/internet/usage/wired/" + userkey + ".json?lang=fr&caller=google.com");
                 response = new StreamReader(ret.GetResponseStream()).ReadToEnd();
                 dynamic toParse = JObject.Parse(response);
 
