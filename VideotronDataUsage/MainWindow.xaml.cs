@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -31,7 +32,6 @@ namespace VideotronDataUsage
             InitializeComponent();
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             userkey.Text = config.AppSettings.Settings["UserKey"].Value;
-            //Videotron data = new Videotron();
 
             if (config.AppSettings.Settings["UserKey"].Value != "")
             {
@@ -44,7 +44,7 @@ namespace VideotronDataUsage
                 }
                 catch (Exception e)
                 {
-                    // alert exception here
+                    MessageBox.Show(e.Message);
                 }
             }
 
@@ -77,6 +77,11 @@ namespace VideotronDataUsage
             base.OnStateChanged(e);
         }
 
+        /// <summary>
+        /// Enregistre la clé Videotron et actualise les informations de consomation
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void save_Click(object sender, RoutedEventArgs e)
         {
             if (userkey.Text != "")
@@ -93,14 +98,21 @@ namespace VideotronDataUsage
                     {
                         try
                         {
-                            data.getDataUsage(userkey.Text);
+                            string keyTmp = userkey.Text;
+                            Thread requestThread = new Thread(new ThreadStart(() => { data.getDataUsage(keyTmp); }));
+                            requestThread.Start();
+
                             conso.SetConso(data);
                         } catch (Exception exe)
                         {
-                            // alert exception here
+                            MessageBox.Show(exe.Message);
                         }
                     }
                 }
+            }
+            else
+            {
+                MessageBox.Show("Veuillez entrer votre clé Vidéotron !");
             }
         }
     }

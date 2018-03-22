@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,6 +31,10 @@ namespace VideotronDataUsage
             this.Hide();
         }
 
+        /// <summary>
+        /// Cache la fenêtre des informations de consomation
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnClosing(CancelEventArgs e)
         {
             if (this.Title == "Consomation")
@@ -40,6 +45,11 @@ namespace VideotronDataUsage
             base.OnClosing(e);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
@@ -47,6 +57,10 @@ namespace VideotronDataUsage
             this.Top = desktopWorkingArea.Bottom - this.Height;
         }
 
+        /// <summary>
+        /// Affiche les informations de consomation
+        /// </summary>
+        /// <param name="data"></param>
         public void SetConso(Videotron data)
         {
             toUpdate = data;
@@ -62,6 +76,11 @@ namespace VideotronDataUsage
             lastRefresh.Content = "Der.Maj : " + DateTime.Now.ToString();
         }
 
+        /// <summary>
+        /// Appellée lors de l'actualisation de la consomation
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void refresh_Click(object sender, RoutedEventArgs e)
         {
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -69,12 +88,18 @@ namespace VideotronDataUsage
             {
                 try
                 {
-                    toUpdate.getDataUsage(config.AppSettings.Settings["UserKey"].Value);
+                    Thread requestThread = new Thread(new ThreadStart(() => { toUpdate.getDataUsage(config.AppSettings.Settings["UserKey"].Value); }));
+                    requestThread.Start();
+
                     SetConso(toUpdate);
                 } catch (Exception ex)
                 {
-                    // alert exception here
+                    MessageBox.Show(ex.Message);
                 }
+            }
+            else
+            {
+                MessageBox.Show("Veuillez entrer votre clé Vidéotron !");
             }
         }
     }

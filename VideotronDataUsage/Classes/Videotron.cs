@@ -31,6 +31,10 @@ namespace VideotronDataUsage.Classes
 
         public string jours { get; set; }
 
+        /// <summary>
+        /// Effectue la requête à l'API de consomation de Videotron
+        /// </summary>
+        /// <param name="userkey">https://www.videotron.com/client/user-management/residentiel/secur/InitProfile.do?dispatch=initProfile&appId=EC#</param>
         public void getDataUsage(string userkey)
         {
             if (userkey != null && userkey != "")
